@@ -1,0 +1,24 @@
+{
+  "name": "a4gm-i18n-bot",
+  "version": "1.0.0",
+  "description": "Internationalization project bot for the attendance-for-google-meet repository",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tytot/a4gm-i18n-bot.git"
+  },
+  "author": "Tyler Lin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tytot/a4gm-i18n-bot/issues"
+  },
+  "homepage": "https://github.com/tytot/a4gm-i18n-bot#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1"
+  }
+}

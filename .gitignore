@@ -1,3 +1,7 @@
+sensitive/
+example_payload.txt
+raw_locales.txt
+
 # Logs
 logs
 *.log

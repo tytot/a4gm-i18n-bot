@@ -2,36 +2,56 @@ const axios = require('axios')
 const auth = require('./auth')
 const table = require('./table')
 
-const getI18nProject = () => {
+const getI18nProject = (token) => {
     return new Promise((resolve, reject) => {
-        auth.generateIAT()
-            .then((token) => {
-                axios
-                    .get('https://api.github.com/repos/tytot/attendance-for-google-meet/projects', {
-                        headers: {
-                            Authorization: 'token ' + token,
-                            Accept: 'application/vnd.github.inertia-preview+json',
-                        },
-                    })
-                    .then((res) => {
-                        const project = res.data.filter(
-                            (project) => project.name === 'Internationalization'
-                        )[0]
-                        return axios.get(`https://api.github.com/projects/${project.id}/columns`, {
-                            headers: {
-                                Authorization: 'token ' + token,
-                                Accept: 'application/vnd.github.inertia-preview+json',
-                            },
-                        })
-                    })
-                    .then((res) => {
-                        resolve(res.data)
-                    })
-                    .catch((error) => {
-                        reject(error)
-                    })
+        axios
+            .get('https://api.github.com/repos/tytot/attendance-for-google-meet/projects', {
+                headers: {
+                    Authorization: 'token ' + token,
+                    Accept: 'application/vnd.github.inertia-preview+json',
+                },
             })
-            .catch((error) => reject(error))
+            .then((res) => {
+                const project = res.data.filter(
+                    (project) => project.name === 'Internationalization'
+                )[0]
+                return axios.get(`https://api.github.com/projects/${project.id}/columns`, {
+                    headers: {
+                        Authorization: 'token ' + token,
+                        Accept: 'application/vnd.github.inertia-preview+json',
+                    },
+                })
+            })
+            .then((res) => {
+                resolve(res.data)
+            })
+            .catch((error) => {
+                reject(error)
+            })
+    })
+}
+
+const addIssueToColumn = (columnID, issueID, token) => {
+    return new Promise((resolve, reject) => {
+        axios
+            .post(
+                `https://api.github.com/projects/columns/${columnID}/cards`,
+                {
+                    contentId: issueID,
+                },
+                {
+                    headers: {
+                        Authorization: 'token ' + token,
+                        Accept: 'application/vnd.github.inertia-preview+json',
+                    },
+                }
+            )
+            .then((res) => {
+                resolve(res.data)
+            })
+            .catch((error) => {
+                reject(error)
+            })
     })
 }
 
@@ -98,6 +118,7 @@ const actions = [
     'opened',
     'edited',
     'deleted',
+    'closed',
     'reopened',
     'assigned',
     'unassigned',
@@ -161,9 +182,8 @@ const processEvent = (payload) => {
                         }
                         if (updated) {
                             return postTranslationSignUps(table.buildTable(signups), token)
-                        } else {
-                            return Promise.resolve(false)
                         }
+                        return Promise.resolve(false)
                     })
                     .then((res) => {
                         if (res) {
